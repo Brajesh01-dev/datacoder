@@ -1,0 +1,9 @@
+google-auth-oauthlib 
+google-auth 
+google-api-python-client
+PyMuPDF 
+bertopic 
+sentence-transformers 
+faiss-cpu 
+google-generativeai
+supabase

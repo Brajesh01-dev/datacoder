@@ -113,3 +113,4 @@ dmypy.json
 *.temp
 *.swp
 *.swo
+.env
