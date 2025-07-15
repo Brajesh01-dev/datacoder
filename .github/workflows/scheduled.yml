@@ -1,13 +1,14 @@
-name: Run Every Minute
+name: Run Every 5 Minutes
 
 on:
   schedule:
-    - cron: '* * * * *'  # Every 1 minute
-  workflow_dispatch:      # Allows manual triggering too
+    - cron: '*/5 * * * *'  # Every 5 minutes
+  workflow_dispatch:        # Optional: allows manual triggering
 
 jobs:
-  run-every-minute:
+  run-every-5-minutes:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Print time
-        run: echo "This job runs every minute"
+      - name: Show Current Time
+        run: echo "This job ran"
