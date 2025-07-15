@@ -1,10 +1,13 @@
-name: Scheduled Job
+name: Run Every Minute
+
 on:
   schedule:
-   - cron: '*/1 * * * *'
+    - cron: '* * * * *'  # Every 1 minute
+  workflow_dispatch:      # Allows manual triggering too
+
 jobs:
-  run-script:
+  run-every-minute:
     runs-on: ubuntu-latest
     steps:
-      - name: Run a script
-        run: echo "Hello from cron!"
+      - name: Print time
+        run: echo "This job runs every minute: $(date)"
