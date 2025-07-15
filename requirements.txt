@@ -8,3 +8,5 @@ faiss-cpu
 google-generativeai
 supabase
 beautifulsoup4
+fastapi
+uvicorn

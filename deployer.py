@@ -1,4 +1,8 @@
+
 import time
+import threading
+from fastapi import FastAPI, BackgroundTasks
+from fastapi.responses import JSONResponse
 from bs4 import BeautifulSoup
 import os
 from datetime import datetime, timedelta
@@ -77,29 +81,53 @@ def mark_as_posted(supabase_id):
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
     supabase.table("autoblogger").update({"is_posted": True}).eq("id", supabase_id).execute()
 
-def main():
-    print("Starting hourly poster. Press Ctrl+C to stop.")
+
+# --- FastAPI App ---
+app = FastAPI()
+
+def try_post_today():
+    row = get_next_html_from_supabase()
+    if not row:
+        return {"status": "no_content", "message": "No content to post today."}
+    if row.get("is_posted"):
+        return {"status": "already_posted", "message": "Already posted today."}
+    html_content = row["html_content"]
+    title = extract_title_from_body(html_content)
+    soup = BeautifulSoup(html_content, "html.parser")
+    body = soup.body
+    if body:
+        post_content = body.decode_contents()
+    else:
+        post_content = html_content
+    if post_to_blogger(title, post_content):
+        mark_as_posted(row["id"])
+        return {"status": "posted", "message": "Posted to Blogger."}
+    else:
+        return {"status": "failed", "message": "Failed to post to Blogger."}
+
+@app.post("/post-today")
+def post_today():
+    result = try_post_today()
+    return JSONResponse(content=result)
+
+@app.get("/status")
+def status():
+    row = get_next_html_from_supabase()
+    if not row:
+        return {"status": "no_content", "message": "No content to post today."}
+    if row.get("is_posted"):
+        return {"status": "already_posted", "message": "Already posted today."}
+    return {"status": "pending", "message": "Not yet posted."}
+
+def hourly_background_loop():
     while True:
-        print(f"\n[INFO] Checking for today's post at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        row = get_next_html_from_supabase()
-        if not row:
-            print("No content to post today.")
-        elif not row.get("is_posted"):
-            print("Attempting to post today's content...")
-            html_content = row["html_content"]
-            title = extract_title_from_body(html_content)
-            soup = BeautifulSoup(html_content, "html.parser")
-            body = soup.body
-            if body:
-                post_content = body.decode_contents()
-            else:
-                post_content = html_content
-            if post_to_blogger(title, post_content):
-                mark_as_posted(row["id"])
-        else:
-            print("Already posted today. Skipping.")
-        # Sleep for 1 hour (3600 seconds)
+        print(f"[Hourly] Checking for today's post at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        try_post_today()
         time.sleep(3600)
 
-if __name__ == "__main__":
-    main()
+@app.on_event("startup")
+def start_hourly_background():
+    t = threading.Thread(target=hourly_background_loop, daemon=True)
+    t.start()
+
+# To run: uvicorn deployer:app --reload
