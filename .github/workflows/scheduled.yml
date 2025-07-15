@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print time
-        run: echo "This job runs every minute: $(date)"
+        run: echo "This job runs every minute"
