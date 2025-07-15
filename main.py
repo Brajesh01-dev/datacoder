@@ -123,6 +123,8 @@ def generate_blog_html(model, title, content):
     Avoid using any code or programming language references.
 
     Format your response in clean HTML using <h2>, <p>, and <ul>/<li> where needed.
+    make tables if needed.
+    give realworld examples if needed.
 
     Content:
     {content}
