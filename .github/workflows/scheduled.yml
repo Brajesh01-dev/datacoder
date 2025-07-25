@@ -1,12 +1,12 @@
-name: Run Every 5 Minutes
+# name: Run Every 5 Minutes
 
-on:
-  schedule:
-    - cron: '*/5 * * * *'  # Every 5 minutes
-jobs:
-  run-every-5-minutes:
-    runs-on: ubuntu-latest
+# on:
+#   schedule:
+#     - cron: '*/5 * * * *'  # Every 5 minutes
+# jobs:
+#   run-every-5-minutes:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Show Current Time
-        run: echo "This job ran"
+#     steps:
+#       - name: Show Current Time
+#         run: echo "This job ran"
