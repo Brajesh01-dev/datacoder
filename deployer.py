@@ -90,7 +90,7 @@ def try_post_today():
     if not row:
         return {"status": "no_content", "message": "No content to post today."}
     if row.get("is_posted"):
-        return {"status": "already_posted", "message": "Already posted today."}
+        return {"status": "already_posted", "message": "Already posted today.","system time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     html_content = row["html_content"]
     title = extract_title_from_body(html_content)
     soup = BeautifulSoup(html_content, "html.parser")
